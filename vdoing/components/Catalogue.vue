@@ -109,6 +109,7 @@ export default {
         catalogueList = this.appointDirDeal(0, keyArray, catalogueList);
       }
       if (!catalogueList) {
+        console.error('sidebar', sidebar)
         console.error('未获取到目录数据，请查看front matter中设置的path是否正确。')
       }
       return catalogueList
