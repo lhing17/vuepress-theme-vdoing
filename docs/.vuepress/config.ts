@@ -126,7 +126,7 @@ export default defineConfig4CustomTheme<VdoingThemeConfig>({
     footer: {
       createYear: 2024, // 博客创建年份
       copyrightInfo:
-        '吉森 | <a href="https://github.com/lhing17/vuepress-theme-vdoing/blob/master/LICENSE" target="_blank">MIT License</a>', // 博客版权信息、备案信息等，支持a标签或换行标签</br>
+        '吉森 | <a href="https://github.com/lhing17/vuepress-theme-vdoing/blob/master/LICENSE" target="_blank">MIT License</a> |  <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">吉ICP备17006653号</a>', // 博客版权信息、备案信息等，支持a标签或换行标签</br>
     },
 
     // 扩展自动生成frontmatter。（当md文件的frontmatter不存在相应的字段时将自动添加。不会覆盖已有的数据。）
