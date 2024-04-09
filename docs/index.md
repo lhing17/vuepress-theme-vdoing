@@ -11,11 +11,11 @@ features: # 可选的
   - title: Java
     details: Java基础、Spring等后端技术
     link: /java/ # 可选
-    imgUrl: /img/web.png # 可选
+    imgUrl: /img/java.png # 可选
   - title: 前端
     details: 前端相关技术
     link: /front/
-    imgUrl: /img/ui.png
+    imgUrl: /img/web.png
   - title: AI
     details: AI时代下程序员何去何从
     link: /ai/
