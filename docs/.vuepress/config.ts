@@ -252,8 +252,8 @@ export default defineConfig4CustomTheme<VdoingThemeConfig>({
       {
         choosen: 'gitalk',
         options: {
-          clientID: 'a6e1355287947096b88b',
-          clientSecret: 'f0e77d070fabfcd5af95bebb82b2d574d7248d71',
+          clientID: 'cba20fe176357066a366',
+          clientSecret: '0526c9eeaf85d1b2dc67bb32400a1250520b4659',
           repo: 'blog-gitalk-comment', // GitHub 仓库
           owner: 'lhing17', // GitHub仓库所有者
           admin: ['lhing17'], // 对仓库有写权限的人
