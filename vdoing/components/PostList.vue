@@ -70,8 +70,12 @@
             </span>
           </div>
         </div>
-        <div class="excerpt-wrapper" v-if="item.excerpt">
-          <div class="excerpt" v-html="item.excerpt"></div>
+        <div class="excerpt-wrapper" v-if="item.excerpt || getPreviewContent(item)">
+          <div class="excerpt" v-if="item.excerpt" v-html="item.excerpt"></div>
+          <div class="excerpt" v-else>
+            {{ getPreviewContent(item) }}
+            <span class="ellipsis">...</span>
+          </div>
           <router-link
             :to="item.path"
             class="readmore iconfont icon-jiantou-you"
@@ -152,6 +156,39 @@ export default {
       }
 
       this.sortPosts = posts.slice((currentPage - 1) * perPage, currentPage * perPage)
+    },
+    getPreviewContent(item) {
+      if (item.excerpt) {
+        return item.excerpt;
+      }
+      
+      // 优先使用frontmatter中的description
+      if (item.frontmatter && item.frontmatter.description) {
+        const desc = item.frontmatter.description;
+        return desc.length > 150 ? desc.substring(0, 150) + '...' : desc;
+      }
+      
+      // 如果有summary字段
+      if (item.frontmatter && item.frontmatter.summary) {
+        const summary = item.frontmatter.summary;
+        return summary.length > 150 ? summary.substring(0, 150) + '...' : summary;
+      }
+      
+      // 生成基于标题和日期的预览
+      const title = item.title || '无标题';
+      const date = item.frontmatter && item.frontmatter.date ? 
+        new Date(item.frontmatter.date).toLocaleDateString('zh-CN') : '';
+      const categories = item.frontmatter && item.frontmatter.categories ? 
+        item.frontmatter.categories.join(', ') : '';
+      const tags = item.frontmatter && item.frontmatter.tags ? 
+        item.frontmatter.tags.slice(0, 3).join(', ') : '';
+      
+      let preview = `${title}`;
+      if (date) preview += ` · ${date}`;
+      if (categories) preview += ` · 分类：${categories}`;
+      if (tags) preview += ` · 标签：${tags}`;
+      
+      return preview.length > 150 ? preview.substring(0, 150) + '...' : preview;
     },
     // getElementToPageTop(el) {
     //   if(el && el.parentElement) {
@@ -238,6 +275,9 @@ export default {
           max-height 280px
           max-width 100% !important
           margin 0 auto
+        .ellipsis
+          color var(--textColor)
+          opacity 0.6
       .readmore
         float right
         margin-right 1rem
