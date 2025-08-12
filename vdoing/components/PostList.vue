@@ -8,7 +8,7 @@
         :key="item.key"
       >
         <div class="title-wrapper">
-          <h2>
+          <h2 style="text-align: center; font-weight: bolder;">
             <router-link :to="item.path">
               {{ item.title }}
               <span class="title-tag" v-if="item.frontmatter.titleTag">{{
