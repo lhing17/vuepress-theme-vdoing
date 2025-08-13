@@ -2,6 +2,7 @@
 import { isActive, hashRE, groupHeaders } from '../util'
 
 export default {
+  name: 'SidebarLink',
   functional: true,
 
   props: ['item', 'sidebarDepth'],

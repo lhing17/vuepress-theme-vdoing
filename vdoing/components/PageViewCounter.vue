@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import AnalyticsService from '../../docs/.vuepress/utils/analytics'
+import AnalyticsService from '../util/analytics'
 
 export default {
   name: 'PageViewCounter',

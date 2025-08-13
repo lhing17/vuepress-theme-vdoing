@@ -1,4 +1,4 @@
-import AV from 'leancloud-storage'
+// 动态导入leancloud-storage，避免SSR问题
 import debounce from 'lodash.debounce'
 
 class AnalyticsService {
@@ -9,16 +9,50 @@ class AnalyticsService {
     this.lastViewTime = new Map()
     this.updateQueue = []
     this.useLocalStorage = false
+    this.isBrowser = typeof window !== 'undefined'
+    this.AV = null // 动态加载的AV对象
     
     // 防抖处理批量更新
-    this.debouncedFlush = debounce(this.flushUpdates.bind(this), 2000)
+    this.debouncedFlush = this.isBrowser ? debounce(this.flushUpdates.bind(this), 2000) : () => {}
+  }
+
+  // 动态导入LeanCloud SDK
+  async loadLeanCloud() {
+    if (!this.isBrowser) {
+      return null
+    }
+    
+    if (this.AV) {
+      return this.AV
+    }
+    
+    try {
+      // 动态导入leancloud-storage
+      const { default: AV } = await import('leancloud-storage')
+      this.AV = AV
+      return AV
+    } catch (error) {
+      console.warn('Failed to load leancloud-storage:', error)
+      return null
+    }
   }
 
   // 初始化LeanCloud
   async init(config) {
+    // 在服务端渲染时跳过初始化
+    if (!this.isBrowser) {
+      return
+    }
+    
     try {
       if (!config || !config.appId || !config.appKey) {
         throw new Error('LeanCloud config is required')
+      }
+
+      // 动态加载LeanCloud SDK
+      const AV = await this.loadLeanCloud()
+      if (!AV) {
+        throw new Error('Failed to load LeanCloud SDK')
       }
 
       AV.init({
@@ -39,7 +73,9 @@ class AnalyticsService {
 
   // 测试LeanCloud连接
   async testConnection() {
-    const TestObject = AV.Object.extend('Test')
+    if (!this.AV) return
+    
+    const TestObject = this.AV.Object.extend('Test')
     const testObject = new TestObject()
     await testObject.save({ test: true })
     await testObject.destroy()
@@ -47,7 +83,8 @@ class AnalyticsService {
 
   // 记录页面访问
   async recordPageView(url, title = '') {
-    if (!this.shouldRecord(url)) {
+    // 在服务端渲染时跳过记录
+    if (!this.isBrowser || !this.shouldRecord(url)) {
       return
     }
 
@@ -91,8 +128,10 @@ class AnalyticsService {
 
   // 远程记录页面访问
   async recordPageViewRemote(url, title) {
-    const PageView = AV.Object.extend('PageView')
-    const query = new AV.Query('PageView')
+    if (!this.AV) return
+    
+    const PageView = this.AV.Object.extend('PageView')
+    const query = new this.AV.Query('PageView')
     query.equalTo('url', url)
     
     try {
@@ -138,6 +177,10 @@ class AnalyticsService {
 
   // 本地记录页面访问
   recordPageViewLocal(url, title) {
+    if (!this.isBrowser) {
+      return
+    }
+    
     const views = JSON.parse(localStorage.getItem('page_views') || '{}')
     views[url] = {
       count: (views[url]?.count || 0) + 1,
@@ -149,6 +192,10 @@ class AnalyticsService {
 
   // 记录网站总访问
   async recordSiteView() {
+    if (!this.isBrowser) {
+      return
+    }
+    
     const today = new Date().toISOString().split('T')[0]
     
     if (this.useLocalStorage) {
@@ -160,8 +207,10 @@ class AnalyticsService {
 
   // 远程记录网站访问
   async recordSiteViewRemote(date) {
-    const SiteView = AV.Object.extend('SiteView')
-    const query = new AV.Query('SiteView')
+    if (!this.AV) return
+    
+    const SiteView = this.AV.Object.extend('SiteView')
+    const query = new this.AV.Query('SiteView')
     query.equalTo('date', date)
     
     try {
@@ -174,7 +223,7 @@ class AnalyticsService {
         await existingView.save()
       } else {
         // 获取历史总访问量
-        const totalQuery = new AV.Query('SiteView')
+        const totalQuery = new this.AV.Query('SiteView')
         totalQuery.descending('createdAt')
         let previousTotal = 0
         
@@ -224,6 +273,10 @@ class AnalyticsService {
 
   // 本地记录网站访问
   recordSiteViewLocal(date) {
+    if (!this.isBrowser) {
+      return
+    }
+    
     const siteViews = JSON.parse(localStorage.getItem('site_views') || '{}')
     
     if (!siteViews[date]) {
@@ -239,6 +292,11 @@ class AnalyticsService {
 
   // 获取页面访问次数
   async getPageViews(url) {
+    // 在服务端渲染时返回0
+    if (!this.isBrowser) {
+      return 0
+    }
+    
     if (this.cache.has(url)) {
       return this.cache.get(url)
     }
@@ -262,7 +320,9 @@ class AnalyticsService {
 
   // 远程获取页面访问次数
   async getPageViewsRemote(url) {
-    const query = new AV.Query('PageView')
+    if (!this.AV) return 0
+    
+    const query = new this.AV.Query('PageView')
     query.equalTo('url', url)
     
     try {
@@ -280,12 +340,21 @@ class AnalyticsService {
 
   // 本地获取页面访问次数
   getPageViewsLocal(url) {
+    if (!this.isBrowser) {
+      return 0
+    }
+    
     const views = JSON.parse(localStorage.getItem('page_views') || '{}')
     return views[url]?.count || 0
   }
 
   // 获取网站总访问次数
   async getSiteViews() {
+    // 在服务端渲染时返回0
+    if (!this.isBrowser) {
+      return 0
+    }
+    
     try {
       if (this.useLocalStorage) {
         return this.getSiteViewsLocal()
@@ -300,7 +369,9 @@ class AnalyticsService {
 
   // 远程获取网站总访问次数
   async getSiteViewsRemote() {
-    const query = new AV.Query('SiteView')
+    if (!this.AV) return 0
+    
+    const query = new this.AV.Query('SiteView')
     query.descending('createdAt')
     
     try {
@@ -318,8 +389,10 @@ class AnalyticsService {
 
   // 创建初始网站访问记录
   async createInitialSiteViewRecord() {
+    if (!this.AV) return 0
+    
     try {
-      const SiteView = AV.Object.extend('SiteView')
+      const SiteView = this.AV.Object.extend('SiteView')
       const today = new Date().toISOString().split('T')[0]
       
       const siteView = new SiteView()
@@ -339,6 +412,10 @@ class AnalyticsService {
 
   // 本地获取网站总访问次数
   getSiteViewsLocal() {
+    if (!this.isBrowser) {
+      return 0
+    }
+    
     const siteViews = JSON.parse(localStorage.getItem('site_views') || '{}')
     return Object.values(siteViews)
       .reduce((total, day) => total + day.todayViews, 0)
