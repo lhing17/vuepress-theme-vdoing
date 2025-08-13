@@ -18,11 +18,19 @@
       <span class="name">{{ blogger.name }}</span>
       <span class="slogan">{{ blogger.slogan }}</span>
     </div>
+    
+    <!-- 网站总访问统计 -->
+    <SiteViewCounter />
   </aside>
 </template>
 
 <script>
+import SiteViewCounter from './SiteViewCounter.vue'
+
 export default {
+  components: {
+    SiteViewCounter
+  },
   computed: {
     blogger () {
       return this.$themeConfig.blogger

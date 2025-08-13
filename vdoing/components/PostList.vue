@@ -52,22 +52,7 @@
                 >{{ c }}</router-link
               >
             </span>
-            <span
-              title="标签"
-              class="iconfont icon-biaoqian tags"
-              v-if="
-                $themeConfig.tag !== false &&
-                item.frontmatter.tags &&
-                item.frontmatter.tags[0]
-              "
-            >
-              <router-link
-                :to="`/tags/?tag=${encodeURIComponent(t)}`"
-                v-for="(t, index) in item.frontmatter.tags"
-                :key="index"
-                >{{ t }}</router-link
-              >
-            </span>
+            <span title="阅读量" class="iconfont icon-shuben count">{{ getFormattedViews(item.path) }} 人阅读</span>
           </div>
         </div>
         <div class="excerpt-wrapper" v-if="item.excerpt || getPreviewContent(item)">
@@ -88,6 +73,9 @@
 </template>
 
 <script>
+
+import AnalyticsService from '../../docs/.vuepress/utils/analytics'
+
 export default {
   props: {
     category: {
@@ -110,17 +98,21 @@ export default {
   data() {
     return {
       sortPosts: [],
-      postListOffsetTop: 0
+      postListOffsetTop: 0,
+      pageViews: {}, // 存储每篇文章的访问量
+      analyticsInitialized: false
     }
   },
   created() {
     this.setPosts()
   },
-  mounted() {
+  async mounted() {
     // this.postListOffsetTop = this.getElementToPageTop(this.$refs.postList) - 240
+    await this.initAnalytics()
+    await this.loadPageViews()
   },
   watch: {
-    currentPage() {
+    async currentPage() {
       if (this.$route.query.p != this.currentPage) { // 此判断防止添加相同的路由信息（如浏览器回退时触发的）
         this.$router.push({
           query: {
@@ -133,15 +125,57 @@ export default {
       //   window.scrollTo({ top: this.postListOffsetTop }) // behavior: 'smooth'
       // },0)
       this.setPosts()
+      await this.loadPageViews()
     },
-    category() {
+    async category() {
       this.setPosts()
+      await this.loadPageViews()
     },
-    tag() {
+    async tag() {
       this.setPosts()
+      await this.loadPageViews()
     }
   },
   methods: {
+    async initAnalytics() {
+      try {
+        // 检查是否启用统计
+        const analyticsConfig = this.$themeConfig.analytics
+        if (!analyticsConfig || !analyticsConfig.enable) {
+          return
+        }
+
+        // 初始化服务
+        if (!AnalyticsService.isInitialized) {
+          const config = analyticsConfig.leancloud
+          await AnalyticsService.init(config)
+        }
+        this.analyticsInitialized = true
+      } catch (error) {
+        console.error('Analytics initialization failed:', error)
+      }
+    },
+    async loadPageViews() {
+      if (!this.analyticsInitialized) {
+        return
+      }
+
+      try {
+        // 为当前页面的所有文章获取访问量
+        for (const item of this.sortPosts) {
+          if (item.path) {
+            const views = await AnalyticsService.getPageViews(item.path)
+            this.$set(this.pageViews, item.path, views)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load page views:', error)
+      }
+    },
+    getFormattedViews(path) {
+      const views = this.pageViews[path] || 0
+      return AnalyticsService.formatNumber(views)
+    },
     setPosts() {
       const currentPage = this.currentPage
       const perPage = this.perPage

@@ -318,3 +318,73 @@ th, td
     display: none
   .page
     padding-top: 0 !important
+
+// 访问统计样式
+.page-view-counter
+  margin 0.8rem 0
+  padding 0.5rem 0
+  border-top 1px solid var(--borderColor)
+  border-bottom 1px solid var(--borderColor)
+  
+  .view-info
+    display flex
+    align-items center
+    font-size 0.9em
+    color var(--textLightenColor)
+    
+    .iconfont
+      margin-right 0.5rem
+      color var(--accent-color)
+      
+    .count
+      font-weight 600
+      color var(--accent-color)
+      margin-left 0.3rem
+
+.site-view-counter
+  margin-top 0.8rem
+  padding-top 0.8rem
+  border-top 1px solid var(--borderColor)
+  
+  .stats-item
+    display flex
+    align-items center
+    padding 0.4rem 0
+    color var(--textColor)
+    font-size 0.9em
+    
+    .iconfont
+      margin-right 0.5rem
+      color var(--accent-color)
+      font-size 1.1em
+      
+    .label
+      flex 1
+      
+    .count
+      font-weight 600
+      color var(--accent-color)
+
+// 响应式设计
+@media (max-width: $MQMobile)
+  .page-view-counter
+    margin 0.6rem 0
+    padding 0.4rem 0
+    
+    .view-info
+      font-size 0.85em
+      
+      .iconfont
+        margin-right 0.4rem
+        
+  .site-view-counter
+    margin-top 0.6rem
+    padding-top 0.6rem
+    
+    .stats-item
+      padding 0.3rem 0
+      font-size 0.85em
+      
+      .iconfont
+        font-size 1em
+        margin-right 0.4rem

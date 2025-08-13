@@ -97,7 +97,7 @@ export default defineConfig4CustomTheme<VdoingThemeConfig>({
     blogger: {
       avatar: '/img/avatar.jpg',
       name: '吉森',
-      slogan: 'AI时代程序员',
+      slogan: 'Fuel your ambition',
     },
 
     // 社交图标 (显示于博主信息栏和页脚栏。内置图标：https://doc.xugaoyi.com/pages/a20ce8/#social)
@@ -138,7 +138,19 @@ export default defineConfig4CustomTheme<VdoingThemeConfig>({
     },
 
     // 自定义html(广告)模块
-    htmlModules
+    htmlModules,
+
+    // 访问统计配置
+    analytics: {
+      enable: true, // 是否启用访问统计
+      showPageViews: true, // 是否显示页面访问量
+      showSiteViews: true, // 是否显示网站总访问量
+      leancloud: {
+        appId: 'ali7xAW3paO6pBwG5SlaIsDS-gzGzoHsz',
+        appKey: 'bJSs61HspftRN1VlCjaWFHC6',
+        serverURL: 'https://ali7xaw3.lc-cn-n1-shared.com'
+      }
+    }
   },
 
   // 注入到页面<head>中的标签，格式[tagName, { attrName: attrValue }, innerHTML?]

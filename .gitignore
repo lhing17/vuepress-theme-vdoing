@@ -23,3 +23,7 @@ urls.txt
 
 # IntelliJ IDEA
 .idea
+
+# 环境变量文件
+.env.local
+.env

@@ -23,6 +23,30 @@
             }}</span>
           </h1>
 
+          <span
+              title="标签"
+              class="iconfont icon-biaoqian tags"
+              v-if="
+                $themeConfig.tag !== false &&
+                $frontmatter.tags &&
+                $frontmatter.tags[0]
+              "
+            >
+              <router-link
+                :to="`/tags/?tag=${encodeURIComponent(t)}`"
+                v-for="(t, index) in $frontmatter.tags"
+                :key="index"
+                >{{ t }}</router-link
+              >
+          </span>
+          
+          <!-- 页面访问统计 -->
+          <PageViewCounter 
+            v-if="isArticle()" 
+            :url="$page.path" 
+            :title="$page.title" 
+          />
+
           <slot name="top" v-if="isShowSlotT" />
 
           <Content class="theme-vdoing-content" />
@@ -49,6 +73,7 @@ import ArticleInfo from './ArticleInfo.vue'
 import Catalogue from './Catalogue.vue'
 import UpdateArticle from './UpdateArticle.vue'
 import RightMenu from './RightMenu.vue'
+import PageViewCounter from './PageViewCounter.vue'
 
 import TitleBadgeMixin from '../mixins/titleBadge'
 
@@ -60,7 +85,7 @@ export default {
     }
   },
   props: ['sidebarItems'],
-  components: { PageEdit, PageNav, ArticleInfo, Catalogue, UpdateArticle, RightMenu },
+  components: { PageEdit, PageNav, ArticleInfo, Catalogue, UpdateArticle, RightMenu, PageViewCounter },
   created() {
     this.updateBarConfig = this.$themeConfig.updateBar
   },
@@ -215,4 +240,7 @@ export default {
   @media (min-width 1280px)
     .sidebar, .sidebar-button
       display none
+.content-wrapper
+  .tags a:not(:first-child)::before
+    content '、'
 </style>
