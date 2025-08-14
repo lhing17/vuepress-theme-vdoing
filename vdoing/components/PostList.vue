@@ -9,12 +9,14 @@
       >
         <div class="title-wrapper">
           <h2 style="text-align: center; font-weight: bolder;">
-            <router-link :to="item.path">
+            <router-link v-if="item.path" :to="item.path">
               {{ item.title }}
-              <span class="title-tag" v-if="item.frontmatter.titleTag">{{
-                item.frontmatter.titleTag
-              }}</span>
+              <span class="title-tag" v-if="item.frontmatter.titleTag">{{ item.frontmatter.titleTag }}</span>
             </router-link>
+            <span v-else>
+              {{ item.title }}
+              <span class="title-tag" v-if="item.frontmatter.titleTag">{{ item.frontmatter.titleTag }}</span>
+            </span>
           </h2>
           <div class="article-info">
             <a
@@ -62,10 +64,12 @@
             <span class="ellipsis">...</span>
           </div>
           <router-link
+            v-if="item.path"
             :to="item.path"
             class="readmore iconfont icon-jiantou-you"
             >阅读全文</router-link
           >
+          <span v-else class="readmore iconfont icon-jiantou-you disabled">阅读全文</span>
         </div>
       </div>
     </transition-group>

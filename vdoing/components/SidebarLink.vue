@@ -56,6 +56,17 @@ export default {
 }
 
 function renderLink(h, to, text, active) {
+  // 如果to为undefined或空，则渲染为span而不是router-link
+  if (!to) {
+    return h('span', {
+      class: {
+        active,
+        'sidebar-link': true,
+        'disabled-link': true
+      }
+    }, text)
+  }
+  
   return h('router-link', {
     props: {
       to,

@@ -13,12 +13,17 @@
         <template v-for="(item, index) in getCatalogueList()">
           <dl v-if="type(item) === 'array'" :key="index" class="inline">
             <dt>
-              <router-link :to="item[2]"
+              <router-link v-if="item[2]" :to="item[2]"
                 >{{ `${index + 1}. ${item[1]}` }}
                 <span class="title-tag" v-if="item[3]">
                   {{ item[3] }}
                 </span>
               </router-link>
+              <span v-else>{{ `${index + 1}. ${item[1]}` }}
+                <span class="title-tag" v-if="item[3]">
+                  {{ item[3] }}
+                </span>
+              </span>
             </dt>
           </dl>
           <dl v-else-if="type(item) === 'object'" :key="index">
@@ -31,12 +36,17 @@
               <!-- 二级目录 -->
               <template v-for="(c, i) in item.children">
                 <template v-if="type(c) === 'array'">
-                  <router-link :to="c[2]" :key="i"
+                  <router-link v-if="c[2]" :to="c[2]" :key="i"
                     >{{ `${index + 1}-${i + 1}. ${c[1]}` }}
                     <span class="title-tag" v-if="c[3]">
                       {{ c[3] }}
                     </span>
                   </router-link>
+                  <span v-else :key="i">{{ `${index + 1}-${i + 1}. ${c[1]}` }}
+                    <span class="title-tag" v-if="c[3]">
+                      {{ c[3] }}
+                    </span>
+                  </span>
                 </template>
                 <!-- 三级目录 -->
                 <div
@@ -48,16 +58,23 @@
                     <a :href="`#${anchorText}`" class="header-anchor">#</a>
                     {{ `${index + 1}-${i + 1}. ${c.title}` }}
                   </div>
-                  <router-link
-                    v-for="(cc, ii) in c.children"
-                    :to="cc[2]"
-                    :key="`${index + 1}-${i + 1}-${ii + 1}`"
-                  >
-                    {{ `${index + 1}-${i + 1}-${ii + 1}. ${cc[1]}` }}
-                    <span class="title-tag" v-if="cc[3]">
-                      {{ cc[3] }}
+                  <template v-for="(cc, ii) in c.children" :key="`${index + 1}-${i + 1}-${ii + 1}`">
+                    <router-link
+                      v-if="cc[2]"
+                      :to="cc[2]"
+                    >
+                      {{ `${index + 1}-${i + 1}-${ii + 1}. ${cc[1]}` }}
+                      <span class="title-tag" v-if="cc[3]">
+                        {{ cc[3] }}
+                      </span>
+                    </router-link>
+                    <span v-else>
+                      {{ `${index + 1}-${i + 1}-${ii + 1}. ${cc[1]}` }}
+                      <span class="title-tag" v-if="cc[3]">
+                        {{ cc[3] }}
+                      </span>
                     </span>
-                  </router-link>
+                  </template>
                 </div>
               </template>
             </dd>

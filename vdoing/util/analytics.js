@@ -1,5 +1,4 @@
 // 动态导入leancloud-storage，避免SSR问题
-import debounce from 'lodash.debounce'
 
 class AnalyticsService {
   constructor() {
@@ -11,9 +10,25 @@ class AnalyticsService {
     this.useLocalStorage = false
     this.isBrowser = typeof window !== 'undefined'
     this.AV = null // 动态加载的AV对象
-    
-    // 防抖处理批量更新
-    this.debouncedFlush = this.isBrowser ? debounce(this.flushUpdates.bind(this), 2000) : () => {}
+    this.debounceTimer = null // 防抖定时器
+  }
+
+  // 简单的防抖函数实现
+  debounce(func, delay) {
+    return (...args) => {
+      if (this.debounceTimer) {
+        clearTimeout(this.debounceTimer)
+      }
+      this.debounceTimer = setTimeout(() => func.apply(this, args), delay)
+    }
+  }
+
+  // 获取防抖的flush函数
+  getDebouncedFlush() {
+    if (!this.debouncedFlush) {
+      this.debouncedFlush = this.isBrowser ? this.debounce(this.flushUpdates.bind(this), 2000) : () => {}
+    }
+    return this.debouncedFlush
   }
 
   // 动态导入LeanCloud SDK

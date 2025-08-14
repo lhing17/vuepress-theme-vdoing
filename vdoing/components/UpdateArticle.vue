@@ -9,7 +9,7 @@
       <dl v-for="(item, index) in topPublishPosts" :key="index">
         <dd>{{ getNum(index) }}</dd>
         <dt>
-          <router-link :to="item.path">
+          <router-link v-if="item.path" :to="item.path">
             <div>
               {{ item.title }}
               <span class="title-tag" v-if="item.frontmatter.titleTag">
@@ -17,6 +17,12 @@
               </span>
             </div>
           </router-link>
+          <div v-else>
+            {{ item.title }}
+            <span class="title-tag" v-if="item.frontmatter.titleTag">
+              {{ item.frontmatter.titleTag }}
+            </span>
+          </div>
           <span class="date">{{ getDate(item) }}</span>
         </dt>
       </dl>

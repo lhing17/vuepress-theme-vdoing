@@ -26,13 +26,20 @@
             </h2>
           </li>
           <li :key="index">
-            <router-link :to="item.path">
+            <router-link v-if="item.path" :to="item.path">
               <span class="date">{{ getDate(item) }}</span>
               {{ item.title }}
               <span class="title-tag" v-if="item.frontmatter.titleTag">
                 {{ item.frontmatter.titleTag }}
               </span>
             </router-link>
+            <span v-else class="disabled-link">
+              <span class="date">{{ getDate(item) }}</span>
+              {{ item.title }}
+              <span class="title-tag" v-if="item.frontmatter.titleTag">
+                {{ item.frontmatter.titleTag }}
+              </span>
+            </span>
           </li>
         </template>
       </ul>

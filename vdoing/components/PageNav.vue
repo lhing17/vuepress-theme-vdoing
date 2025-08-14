@@ -7,7 +7,7 @@
     >
       <router-link
         class="page-nav-centre page-nav-centre-prev"
-        v-if="prev"
+        v-if="prev && prev.path"
         :to="prev.path"
         @mouseenter.native="showTooltip($event)"
         @mousemove.native="showTooltip($event)"
@@ -17,7 +17,7 @@
 
       <router-link
         class="page-nav-centre page-nav-centre-next"
-        v-if="next"
+        v-if="next && next.path"
         :to="next.path"
         @mouseenter.native="showTooltip($event)"
         @mousemove.native="showTooltip($event)"
@@ -33,23 +33,21 @@
     >
       <p class="inner">
         <span
-          v-if="prev"
+          v-if="prev && prev.path"
           class="prev"
         >
           ←
           <router-link
-            v-if="prev"
             class="prev"
             :to="prev.path"
           >{{ prev.title || prev.path }}</router-link>
         </span>
 
         <span
-          v-if="next"
+          v-if="next && next.path"
           class="next"
         >
           <router-link
-            v-if="next"
             :to="next.path"
           >{{ next.title || next.path }}</router-link>→
         </span>

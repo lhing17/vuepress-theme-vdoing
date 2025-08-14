@@ -125,6 +125,9 @@ export default {
 
     getLink(item) {
       const { cataloguePermalink } = this
+      if (!cataloguePermalink) {
+        return '/'
+      }
       if (item === cataloguePermalink) {
         return cataloguePermalink
       }
