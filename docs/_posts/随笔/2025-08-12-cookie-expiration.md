@@ -1,7 +1,7 @@
 ---
 title: 深入理解Cookie生命周期：一次SSO单点登录问题的排查与解决
 date: 2025-08-12 20:00:00
-permalink: /pages/1cf776/
+permalink: /pages/cookie-expiration/
 sidebar: auto
 categories:
   - 随笔
